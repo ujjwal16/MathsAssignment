@@ -20,9 +20,9 @@ float Random(int low, int high)
 }
 
 // Swapping row of matrix
-void SwapRow(float** mat, int i, int j)
+inline void SwapRow(float** mat, int i, int j)
 {   
-    for (int k = 0; k <= N; k++)
+    for (int k = i; k <= N; k++)
     {
         float temp = mat[i][k];
         mat[i][k] = mat[j][k];
