@@ -49,7 +49,7 @@ int ForwardElimination(float** mat)
 		}
        
         // Main diagonal element is zero, it is singula. Nothing to do return. 
-        if (!mat[k][max])
+        if (!mat[k][k])
 			return k; 
 
          // Swap row with max value row.    
