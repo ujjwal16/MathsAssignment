@@ -1,27 +1,31 @@
-// GaussElimination.cpp : Defines the entry point for the console application.
-//
+// GaussElimination.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
-#include "stdafx.h"
+#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <chrono>
+#include <sstream>
+#include <stdio.h>
+
 using namespace std;
-#define N 10000
+//#define N 10000
 
 
-
+int N = 1000;
 // Random number generator
+
 float Random(int low, int high)
 {
-    
-    float num = ((float)rand() / RAND_MAX) * (float)(18.0);      
+
+    float num = ((float)rand() / RAND_MAX) * (float)(18.0);
     num = num - 9;
     return num;
 }
 
 // Swapping row of matrix
 inline void SwapRow(float** mat, int i, int j)
-{   
+{
     for (int k = i; k <= N; k++)
     {
         float temp = mat[i][k];
@@ -33,6 +37,12 @@ inline void SwapRow(float** mat, int i, int j)
 // Perform forward elimination
 int ForwardElimination(float** mat)
 {
+    chrono::high_resolution_clock::time_point start;
+    chrono::high_resolution_clock::time_point end;
+    string sComputationTime;
+    double computationTime = 0.0;
+    FILE* complete = fopen("C:\\temp\\PracticalForwardElimination.txt", "a");
+    start = chrono::high_resolution_clock::now();
     for (int k = 0; k < N; k++)
     {
         // Initialize maximum value and index for pivot
@@ -41,18 +51,19 @@ int ForwardElimination(float** mat)
 
         /* Find greater pivot value */
         for (int i = k + 1; i < N; i++)
-        {  if (abs(mat[i][k]) > max_value)
-			{   
-				max_value = mat[i][k];
-				max = i;
-			}
-		}
-       
+        {
+            if (abs(mat[i][k]) > max_value)
+            {
+                max_value = mat[i][k];
+                max = i;
+            }
+        }
+
         // Main diagonal element is zero, it is singula. Nothing to do return. 
         if (!mat[k][k])
-			return k; 
+            return k;
 
-         // Swap row with max value row.    
+        // Swap row with max value row.    
         if (max != k)
             SwapRow(mat, k, max);
 
@@ -71,15 +82,26 @@ int ForwardElimination(float** mat)
             mat[i][k] = 0;
         }
     }
+    end = chrono::high_resolution_clock::now();
+    computationTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+    sComputationTime = to_string(computationTime);
+
+    fprintf(complete, "%ld, %s\n", N, sComputationTime.c_str());
+    fclose(complete);
     return -1;
 }
 
 void BackSubsitution(float** mat)
 {
-    float x[N]; // An array to store solution
-
+    float x[10000]; // An array to store solution
+    chrono::high_resolution_clock::time_point start;
+    chrono::high_resolution_clock::time_point end;
+    string sComputationTime;
+    double computationTime = 0.0;
+    FILE* complete = fopen("C:\\temp\\PracticalBackWardElimination.txt", "a");
     /* Start calculating from last equation up to the
     first */
+    start = chrono::high_resolution_clock::now();
     for (int i = N - 1; i >= 0; i--)
     {
         /* start with the RHS of the equation */
@@ -99,52 +121,105 @@ void BackSubsitution(float** mat)
         unknown being calculated */
         x[i] = x[i] / mat[i][i];
     }
-  
+    end = chrono::high_resolution_clock::now();
+    computationTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+    sComputationTime = to_string(computationTime);
+
+    fprintf(complete, "%ld, %s\n", N, sComputationTime.c_str());
+    fclose(complete);   
 }
 
 void GaussianElimination(float** arr)
 {
+    //this is trial
     // Create RREF Form
     int Singular = ForwardElimination(arr);
 
     // Matrix is singular
-    if ( Singular != -1)
+    if (Singular != -1)
     {
         return;
     }
-	BackSubsitution(arr);
+    BackSubsitution(arr);
 
 }
 
 int main()
 {
-	int i=0;
-    float** arr = (float**)malloc(N * sizeof(float*));
-    for (i = 0; i < N; i++)
-        arr[i] = (float*)malloc((N+1) * sizeof(float));
-  
-    clock_t start = clock();    
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j <= N; j++)
-        {
-           arr[i][j] =(float)Random(0, 18);
-        }  
-    }
-    clock_t end = clock();
 
-	// Time taken to create random array
-    double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-    cout << cpu_time_used;
-    start = clock();
-    GaussianElimination(arr);
-    end = clock();
-    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-    cout << "\n";
-    cout << cpu_time_used;
-    for (int i = 0; i < N; ++i)
-        delete[] arr[i];
-    delete[] arr;
+
+  
+    long long unsigned int LIMIT = 100000000;
+    long long unsigned int j = 0;
+    long long unsigned int temp = 0;
+    chrono::high_resolution_clock::time_point endC;
+    chrono::high_resolution_clock::time_point startC = chrono::high_resolution_clock::now();
+    while (j < LIMIT) {
+        j++;
+        temp = j * j;
+    }
+    endC = chrono::high_resolution_clock::now();
+  
+
+
+
+        
+    double computationTime = 0.0;
+    double computationTimeS = 0.0;
+    string forwardComputation;
+    string backSubstitution;
+    chrono::high_resolution_clock::time_point start;
+    chrono::high_resolution_clock::time_point end;
+    std::chrono::milliseconds gaussComputationTime;
+    string sComputationTime;
+    FILE* complete = fopen("C:\\temp\\Gauss.txt", "a");
+    FILE* theoriticalForward = fopen("C:\\temp\\TheoryForward.txt", "a");
+    FILE* theoriticalBackward = fopen("C:\\temp\\TheoryBackward.txt", "a");
+    computationTimeS = chrono::duration_cast<chrono::nanoseconds>(endC - startC).count();
+    computationTimeS = computationTimeS / LIMIT;
+    computationTimeS /= 3;
+    for (N = 1000; N <= 10000; N = N + 1000)
+    {
+        int i = 0;
+        forwardComputation =to_string((((double)2 / 3) * pow(N, 3) * computationTimeS)/1000000);
+        backSubstitution = to_string(((double)pow(N, 2) * computationTimeS)/1000000);
+        fprintf(theoriticalForward, " %d, %s\n", N, forwardComputation.c_str());
+        fprintf(theoriticalBackward, "%d, %s\n", N, backSubstitution.c_str());
+        
+        // Allocate memory for random array
+        float** arr = (float**)malloc(N * sizeof(float*));
+        for (i = 0; i < N; i++)
+            arr[i] = (float*)malloc((N + 1) * sizeof(float));
+
+
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j <= N; j++)
+            {
+                arr[i][j] = (float)Random(0, 18);
+            }
+        }
+
+        start = chrono::high_resolution_clock::now();
+        GaussianElimination(arr);
+        end = chrono::high_resolution_clock::now();
+        computationTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+        sComputationTime = to_string(computationTime);
+
+        fprintf(complete, "%ld, %s\n", N, sComputationTime.c_str());
+
+
+        for (int i = 0; i < N; ++i)
+        {
+            free(arr[i]);
+        }
+        free(arr);
+        fflush(theoriticalBackward);
+        fflush(theoriticalForward);
+        fflush(complete);
+    }
+    fclose(theoriticalBackward);
+    fclose(theoriticalForward);
+    fclose(complete);
     return 0;
 }
-
